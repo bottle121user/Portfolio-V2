@@ -1,0 +1,60 @@
+Yuvraj Kapri
++91-7818082782 |yuv575raj537@gmail.com |Pithoragarh, Uttarakhand, India
+LinkedIn |GitHub |LeetCode (1600+)
+Professional Summary
+Computer Science engineer with hands-on experience in cybersecurity, machine learning, and full-stack development.
+Specialized in secure system design, web application security, and building data-driven applications. Strong problem-solving
+skills demonstrated through 1600+ LeetCode rating and real-world internship experience.
+Technical Skills
+Programming Languages : Java, SQL, Python
+Web & Backend : Flask
+Databases : MySQL, PostgreSQL
+Cybersecurity : OWASP Top 10, Vulnerability Assessment, OAuth, API Security, Cloud Security
+ML & Data : LightGBM, scikit-learn, Pandas, Plotly, Streamlit, FastF1
+Blockchain : Solidity, Web3.js, MetaMask, Smart Contracts, Ethereum
+Education
+Graphic Era Hill University Uttarakhand, India
+Bachelor of Technology in Computer Science & Engineering Sep 2021 – Jun 2025
+–CGPA: 7.8 / 10.0
+–Relevant Coursework: Data Structures & Algorithms, DBMS, Operating Systems, Software Engineering, System
+Design, Computer Networks
+Experience
+Technical Content Writer Intern Aug 2025 – Present
+Astra Security Remote
+–Researched and authored in-depth technical content on web application security, vulnerabilities, and attack vectors
+including OWASP Top 10 (SQL Injection, XSS, CSRF, IDOR).
+–Translated complex cybersecurity concepts into developer-friendly documentation aligned with industry security
+standards.
+–Collaborated with security engineers on vulnerability assessment workflows, secure coding practices, and threat
+modeling.
+Virtual Software Engineering Intern Jul 2025
+Electronic Arts Remote
+–Proposed and designed a new feature for EA Sports College Football with formal documentation and UML
+diagrams.
+–Improved system performance by replacing legacy data structures with optimized C++ alternatives.
+Projects
+F1 Pit Stop Strategy AI |Python, LightGBM, FastF1, Streamlit, Plotly, OpenF1 API
+–Built an end-to-end ML pipeline ingesting 5 years (2021–2025) of F1 lap-by-lap telemetry using the FastF1 and
+Jolpica APIs, processing millions of data points across tyre compounds, stint lengths, and lap time deltas.
+–Trained a LightGBM classifier to predict optimal pit windows using features including tyre age, lap time
+degradation curves, driver position, and track status flags (safety car, VSC periods).
+–Built a lap-by-lap race simulator modelling tyre degradation physics across 4 strategy types, enabling “what-if”
+strategy comparisons for undercut and overcut scenarios.
+–Deployed an interactive 4-tab Streamlit dashboard with live race data integration via OpenF1 API, featuring
+real-time PIT/STAY OUT recommendations with confidence scores and 2026 championship standings.
+Blockchain-Based Online Voting System |Solidity, Web3.js, MetaMask, Ethereum, HTML/CSS/JS
+–Developed a tamper-proof decentralized voting application on the Ethereum blockchain using Solidity smart
+contracts, eliminating reliance on a central authority.
+–Implemented double-voting prevention at the smart contract level using wallet address tracking, ensuring each voter
+can cast exactly one vote regardless of frontend manipulation.
+–Integrated MetaMask wallet authentication for secure voter identity verification, replacing traditional
+username/password authentication with cryptographic signatures.
+–Connected the frontend to the Ethereum network via Web3.js, enabling real-time vote transactions and live result
+retrieval directly from the blockchain.
+Achievements
+LeetCode: 1600+ rating with 500+ problems solved across data structures and algorithms
+Open Source: Contributed to open-source projects with 50+ GitHub stars across repositories
+Certifications
+AWS Certified Solutions Architect – Associate (2024)
+Web Development Professional Certification (2024)
+Electronic Arts Software Engineering Virtual Experience (2025)

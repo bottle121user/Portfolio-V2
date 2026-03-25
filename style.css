@@ -1,0 +1,585 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #000;
+    font-family: 'Press Start 2P', monospace;
+    color: #333;
+    overflow: hidden; /* Hide scrollbars for the game-like view */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    -webkit-font-smoothing: none; /* Disable browser smudging for pixel art text */
+    font-smooth: never;
+}
+
+/* Container locking aspect ratio or filling screen */
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #87CEEB; /* Fallback flat sky color */
+}
+
+/* Base style for motion backgrounds without repeating borders */
+.bg-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200vw; /* Double width for scrolling wrap */
+    background-repeat: repeat-x;
+    image-rendering: pixelated; 
+    pointer-events: none;
+}
+
+.bg-sky {
+    background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+}
+
+.bg-clouds {
+    background-image: url('retro_clouds_bg.png'); 
+    background-size: auto 100%; /* UNSTRETCHED! Maintains original crisp quality */
+    animation: scrollBg 60s linear infinite;
+    height: 60vh;
+    opacity: 0.9;
+}
+
+.bg-ground {
+    background-image: url('retro_ground_bg.png');
+    background-size: auto 100%; /* UNSTRETCHED! */
+    animation: scrollBg 30s linear infinite;
+    bottom: 0;
+    height: 48vh; /* Make it taller so it overlaps the clouds slightly */
+    top: auto;
+    /* Softly fade the top edge into the clouds using a mask gradient */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
+}
+
+/* UI Layer holds the interactive elements over the background */
+.ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Let clicks pass through empty areas */
+}
+
+/* Box Panels (Classic RPG Style dialog and menus) */
+.box-panel {
+    background: rgba(0, 0, 0, 0.85); /* Dark semi-transparent for text readability */
+    color: #fff;
+    border: 4px solid #fff;
+    border-radius: 4px;
+    padding: 20px;
+    position: absolute;
+    pointer-events: auto; /* Re-enable clicks inside panels */
+    box-shadow: 0 0 0 4px #000, inset 0 0 0 2px #000;
+}
+
+.dialog-box {
+    top: auto;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    max-width: 900px;
+    min-height: 160px; /* Use min-height to allow growth */
+    height: auto;
+    display: flex;
+    align-items: flex-start;
+    font-size: 16px;
+    line-height: 1.6; /* Tighter line height to fit more text */
+    gap: 20px;
+    padding-bottom: 40px;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 100;
+}
+
+/* Projects Mode Layout */
+.ui-layer.projects-mode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    gap: 15px; /* Tighter gap to fit screen */
+    overflow-y: auto;
+}
+
+.ui-layer.projects-mode .menu-box,
+.ui-layer.projects-mode .dialog-box,
+.ui-layer.projects-mode #projects-display {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    transform: none;
+    margin: 0;
+}
+
+.ui-layer.projects-mode #projects-display,
+.ui-layer.projects-mode #experience-display,
+.ui-layer.projects-mode #games-display {
+    position: relative !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    margin: 20px 0 !important;
+    height: 600px !important; /* Increased height to prevent overflow of content cards */
+    width: 95% !important;
+    max-width: 1200px !important;
+    flex-shrink: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.avatar-container {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    border: 2px solid #fff;
+    padding: 2px;
+    background: #222;
+}
+
+#avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+#avatar-img.talking {
+    animation: talkBounce 0.2s infinite alternate;
+}
+
+@keyframes talkBounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-4px); }
+}
+
+.text-container {
+    position: relative;
+    flex-grow: 1;
+    height: 100%;
+}
+
+.dialog-indicator {
+    position: absolute;
+    bottom: 0px;
+    right: 5px;
+    animation: bounce 1s infinite;
+}
+
+.menu-box {
+    top: 30px; /* Anchored securely to the top edge */
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    padding: 10px 30px;
+    display: flex;
+    justify-content: center;
+    padding: 10px 20px;
+}
+
+#menu-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap; /* Support for tight mobile screens */
+    width: 100%;
+    justify-content: center;
+    gap: 30px;
+}
+
+.menu-item {
+    padding: 10px 10px 10px 30px; /* Room for the cursor arrow */
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+    transition: text-shadow 0.2s, transform 0.1s;
+}
+
+.menu-item:hover, .menu-item.active {
+    color: #fff;
+    text-shadow: 2px 2px 0px #d12e2e;
+}
+
+.menu-item:active {
+    transform: scale(0.98);
+}
+
+.menu-item .full-text {
+    display: inline-block;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    vertical-align: bottom;
+    white-space: nowrap;
+    transition: max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease-in-out;
+}
+
+.menu-item.active .full-text {
+    max-width: 250px;
+    opacity: 1;
+}
+
+.menu-item:hover::before {
+    content: "▷";
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    color: #fff;
+}
+
+.menu-item.active::before {
+    content: "▶";
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    color: #fff;
+    animation: blinkCursor 0.5s step-end infinite;
+}
+
+@keyframes blinkCursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* Social Links Panel */
+.social-links {
+    top: 50%;
+    right: 30px;
+    left: auto; /* override any default left anchors */
+    bottom: auto;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    align-items: center;
+    padding: 25px 15px;
+}
+
+.social-icon {
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s ease;
+    display: flex;
+}
+
+.social-icon:hover {
+    color: #d12e2e;
+    transform: scale(1.15) rotate(5deg);
+}
+
+.social-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+#projects-display, #experience-display, #games-display {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center; 
+    justify-content: center; 
+    gap: 30px; 
+    width: 95%;
+    max-width: 1200px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding: 10px;
+    z-index: 50;
+    transition: opacity 0.4s ease;
+    pointer-events: auto;
+}
+
+#projects-display.hidden, #experience-display.hidden, #games-display.hidden {
+    display: none !important;
+}
+
+#project-icons, #experience-icons {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.project-icon-btn, .experience-icon-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+    background: rgba(0, 0, 0, 0.8);
+    border: 4px solid #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 180px;
+    text-align: center;
+}
+
+.project-icon-btn:hover, .experience-icon-btn:hover {
+    transform: scale(1.1);
+    border-color: #4facfe;
+    box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+}
+
+.icon-glyph {
+    font-size: 50px;
+    image-rendering: pixelated;
+}
+
+.project-icon-btn span, .experience-icon-btn span {
+    font-size: 14px;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.project-detail.hidden, .experience-detail.hidden {
+    display: none !important;
+}
+
+.back-btn, .back-btn-exp {
+    background: #000;
+    color: #fff;
+    border: 2px solid #fff;
+    padding: 5px 15px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: all 0.2s;
+    align-self: flex-start;
+}
+
+.back-btn:hover, .back-btn-exp:hover {
+    background: #fff;
+    color: #000;
+}
+
+.exp-content h3 {
+    color: #4facfe;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.exp-content p {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 20px;
+    border-bottom: 2px dashed #444;
+    padding-bottom: 10px;
+}
+
+.exp-list {
+    list-style: none;
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+.exp-list li::before {
+    content: "▶ ";
+    color: #4facfe;
+}
+
+.project-card {
+    width: 600px;
+    min-height: 450px !important;
+    max-width: 85vw;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    flex-shrink: 0;
+    transition: transform 0.2s, border-color 0.2s;
+    background: rgba(0, 0, 0, 0.95);
+    border: 4px solid #fff;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+a.project-card:hover {
+    transform: scale(1.02);
+    border-color: #4facfe;
+    cursor: pointer;
+}
+
+.project-card h3 {
+    color: #4facfe;
+    font-size: 16px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.project-card p {
+    font-size: 13px;
+    line-height: 1.6;
+    border-bottom: 2px dashed #444;
+    padding-bottom: 10px;
+}
+.project-split {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+    height: calc(100% - 110px); /* Give space for card headers */
+}
+
+.project-idea, .project-glance {
+    flex: 1;
+    font-size: 11px;
+    line-height: 1.6;
+    background: rgba(0,0,0,0.5);
+    padding: 15px;
+    border: 2px solid #555;
+    border-radius: 4px;
+    overflow-y: auto;
+}
+
+.project-glance img {
+    border: 2px solid #fff;
+    pointer-events: auto;
+}
+
+
+@media (max-width: 800px) {
+    .project-split {
+        flex-direction: column;
+    }
+    .project-card {
+        min-width: 90vw;
+    }
+}
+
+/* CRT Overlay Effect */
+.crt-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 4px, 6px 100%;
+    box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+}
+
+/* Hyperlinks in Retrotown */
+.retro-link {
+    color: #4facfe;
+    text-decoration: none;
+    border-bottom: 2px dashed #4facfe;
+    transition: all 0.2s;
+    pointer-events: auto;
+}
+
+.retro-link:hover {
+    color: #fff;
+    border-bottom: 2px solid #fff;
+    background: #d12e2e;
+}
+
+/* Cherry Blossom Leaves */
+#leaves-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 10; /* Above backgrounds, below UI overlays */
+}
+
+.leaf {
+    position: absolute;
+    top: -20px;
+    background-color: #ff9cbd; /* Light pink cherry blossom */
+    border-radius: 8px 0px 8px 0px; /* Looks like a perfect petal */
+    opacity: 0.8;
+    pointer-events: none;
+    animation: fall linear infinite;
+    /* Give it some depth */
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+@keyframes fall {
+    0% {
+        transform: translate(0px, -20px) rotate(0deg);
+        opacity: 0;
+    }
+    5% { opacity: 0.9; }
+    90% { opacity: 0.9; }
+    100% {
+        transform: translate(150px, 110vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Animated Math Strip */
+.math-strip {
+    position: absolute;
+    bottom: 10px; /* Sits nicely underneath the dialog box at the absolute bottom */
+    left: -100vw; /* Start with first half off-screen left */
+    width: 200vw; /* Double width so it can scroll seamlessly horizontally */
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 12px;
+    word-spacing: 15px; /* Spread symbols out */
+    z-index: 10;
+    animation: scrollRightMath 40s linear infinite;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.5); /* Pop retro styling */
+}
+
+@keyframes scrollRightMath {
+    from { transform: translateX(0); }
+    to { transform: translateX(100vw); } /* Move half its total width rightwards! */
+}
+
+/* Base CSS Animations */
+@keyframes scrollBg {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50vw); } 
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+}
+
+/* Responsive constraints */
+@media (max-width: 768px) {
+    .menu-box {
+        top: 20px;
+        right: 50%;
+        transform: translateX(50%);
+        width: 90%;
+        max-width: 400px;
+    }
+    .dialog-box {
+        font-size: 8px; /* Pixel-perfect size increment */
+        height: 120px;
+        bottom: 20px;
+    }
+    .menu-item {
+        padding: 10px;
+        font-size: 8px; /* Pixel-perfect size increment */
+    }
+}
